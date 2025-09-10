@@ -21,11 +21,11 @@ def create_prompt(preferences):
     field_map = {
         "evento": "Tipo de Evento", "clima": "Clima previsto",
         "horario": "Horário do evento", "cabelo": "Características do cabelo",
-        "cor": "Cores preferidas/que combinam", "idade": "Idade", "genero": "Gênero",
+        "corPreferida": "Cores preferidas/que combinam", "idade": "Idade", "genero": "Gênero",
         "identidadeGenero": "Identidade de Gênero", "estilo": "Preferências de estilo pessoal",
         "imagem": "Imagem que deseja transmitir", "local": "Local do evento",
         "duracao": "Duração do evento", "pecas": "Tipos de peça que gosta",
-        "adicionais": "Informações adicionais"
+        "adicionais": "Informações adicionais", "tomPele": "Tom de pele", "altura": "Altura"
     }
     for key, label in field_map.items():
         if value := preferences.get(key):
@@ -80,10 +80,10 @@ def create_prompt(preferences):
             "detalhes": "Couro legítimo com bico fino e salto de 7cm.",
             "imagem": "https://images.pexels.com/photos/1445696/pexels-photo-1445696.jpeg"
           }},
-          "cabelo": {{
+          "cabelo": {{  
             "nome": "Coque Baixo Polido",
             "descricao": "Um penteado sofisticado que transmite elegância e mantém o foco no rosto e nos acessórios.",
-            "cores": [],
+            "cores": ["Preto", "Castanho"],
             "tamanho": [],
             "detalhes": "Finalizado com spray de brilho para um acabamento impecável e sem frizz.",
             "imagem": "https://images.pexels.com/photos/3992873/pexels-photo-3992873.jpeg"
@@ -97,6 +97,8 @@ def create_prompt(preferences):
             "imagem": "https://images.pexels.com/photos/1413420/pexels-photo-1413420.jpeg"
           }}
         }}
+        
+        IMPORTANTE: O campo "cores" NUNCA deve estar vazio. Sempre forneça pelo menos uma cor principal e, se possível, uma cor secundária relacionado a cada uma das coisas que sugeriu.
 
         Agora, gere o objeto JSON com base nas preferências do usuário.
     """
