@@ -322,5 +322,22 @@ def test_email():
             "error": str(e)
         }), 500
 
+@app.route("/api/health", methods=["GET"])
+def health_check():
+    """Health check endpoint for Vercel"""
+    return jsonify({
+        "status": "healthy",
+        "message": "Stylo.ai API is running",
+        "version": "1.0.0"
+    })
+
+@app.route("/", methods=["GET"])  
+def home():
+    """Home endpoint"""
+    return jsonify({
+        "message": "Stylo.ai Backend API",
+        "status": "running"
+    })
+
 if __name__ == "__main__":
     app.run(port=3001, debug=True)
