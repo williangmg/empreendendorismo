@@ -1,10 +1,45 @@
 import React from 'react';
-import { ArrowLeft, Star, Heart, ShoppingCart } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
-function ResultsScreen({ recommendations, onProductSelect, onBack }) {
+// Componente auxiliar para exibir cada item do look de forma organizada
+function LookItemCard({ category, item }) {
+  // Se não houver um item para a categoria (ex: a IA não sugeriu acessório), não renderiza nada.
+  if (!item || !item.nome) return null;
+
+  return (
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl">
+      <div className="md:flex">
+        <div className="md:flex-shrink-0">
+          <img
+            src={item.imagem}
+            alt={item.nome}
+            className="h-56 w-full object-cover md:w-56"
+          />
+        </div>
+        <div className="p-6 flex flex-col justify-center">
+          <div className="uppercase tracking-wide text-sm text-indigo-600 font-semibold">{category}</div>
+          <h3 className="block mt-1 text-2xl leading-tight font-bold text-gray-900">{item.nome}</h3>
+          <p className="mt-2 text-gray-700">{item.descricao}</p>
+          <p className="mt-3 text-sm text-gray-500"><strong>Detalhes:</strong> {item.detalhes}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ResultsScreen({ recommendations, onBack }) {
+  // Mapeia as chaves do objeto para títulos amigáveis em português
+  const categories = {
+    superior: "Parte Superior",
+    inferior: "Parte Inferior",
+    calcado: "Calçado",
+    cabelo: "Sugestão de Cabelo / Penteado",
+    acessorio: "Acessório"
+  };
+
   return (
     <div className="min-h-screen p-6">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center mb-8">
           <button
@@ -14,72 +49,30 @@ function ResultsScreen({ recommendations, onProductSelect, onBack }) {
             <ArrowLeft className="h-6 w-6 text-gray-600" />
           </button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Suas Recomendações</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Seu Look Personalizado</h1>
             <p className="text-gray-600 mt-1">
-              Encontramos {recommendations.length} peças perfeitas para você
+              Criamos uma combinação perfeita com base nas suas preferências.
             </p>
           </div>
         </div>
 
-        {/* Results Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {recommendations.map(product => (
-            <div
-              key={product.id}
-              onClick={() => onProductSelect(product)}
-              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all transform hover:scale-105 cursor-pointer"
-            >
-              {/* Product Image */}
-              <div className="relative">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-64 object-cover"
-                />
-                <button className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors">
-                  <Heart className="h-5 w-5 text-gray-400 hover:text-red-500" />
-                </button>
-              </div>
-
-              {/* Product Info */}
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-blue-600">{product.brand}</span>
-                  <div className="flex items-center">
-                    <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                    <span className="text-sm text-gray-600 ml-1">{product.rating}</span>
-                  </div>
-                </div>
-                
-                <h3 className="text-lg font-bold text-gray-900 mb-2">{product.name}</h3>
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
-                
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-gray-900">
-                    R$ {product.price.toFixed(2)}
-                  </span>
-                  <button className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all flex items-center">
-                    <ShoppingCart className="h-4 w-4 mr-1" />
-                    Ver
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* No Results */}
-        {recommendations.length === 0 && (
+        {/* Grade de Resultados */}
+        {recommendations ? (
+          <div className="space-y-8">
+            {Object.keys(categories).map(key => (
+              <LookItemCard 
+                key={key}
+                category={categories[key]}
+                item={recommendations[key]}
+              />
+            ))}
+          </div>
+        ) : (
           <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <Heart className="h-16 w-16 mx-auto" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">
-              Nenhuma recomendação encontrada
+            <h3 className="text-xl font-semibold text-gray-600">
+              Nenhuma recomendação encontrada.
             </h3>
-            <p className="text-gray-500">
-              Tente ajustar suas preferências para obter melhores resultados.
-            </p>
+            <p className="text-gray-500">Tente refazer a consulta para obter resultados.</p>
           </div>
         )}
       </div>
