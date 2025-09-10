@@ -14,9 +14,9 @@ const ModalIndisponivel = ({ open, onClose }) => {
           🚧 Serviço Indisponível
         </h2>
         <p className="text-gray-600 mb-6 leading-relaxed">
-          A opção de <span className="font-semibold">conversa com IA</span> ainda não está disponível.
+          Essa opção ainda <span className="font-semibold">NÃO</span> está disponível.
           <br />
-          Por favor, escolha o formulário rápido por enquanto.
+          Por favor, escolha outra por enquanto.
           <br />
           Aguarde novidades! 😊
         </p>

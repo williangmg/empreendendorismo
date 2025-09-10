@@ -18,14 +18,21 @@ import {
   Phone,
   Mail,
 } from "lucide-react";
+import ModalIndisponivel from "./ModalIndisponivel";
 
 function FormScreen({ onSubmit, onBack }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleCloseModal = () => setIsModalOpen(false);
+
+  const handleOpenModal = () => setIsModalOpen(true);
+
   const [formData, setFormData] = useState({
     evento: "",
     clima: "",
     horario: "",
     cabelo: "",
-    cor: "",
+    corPreferida: "",
     idade: "",
     genero: "",
     identidadeGenero: "",
@@ -36,10 +43,18 @@ function FormScreen({ onSubmit, onBack }) {
     pecas: "",
     adicionais: "",
     contato: "",
+    tomPele: "",
     telefone: "",
+    altura: "",
   });
 
   const handleSubmit = (e) => {
+    if (formData.contato === "whatsapp") {
+      handleOpenModal();
+    } else {
+      handleCloseModal();
+    }
+
     e.preventDefault();
     onSubmit(formData);
   };
@@ -70,7 +85,9 @@ function FormScreen({ onSubmit, onBack }) {
             <input
               type="text"
               value={formData.evento}
-              onChange={(e) => setFormData({ ...formData, evento: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, evento: e.target.value })
+              }
               className="w-full p-3 border border-gray-300 rounded-lg"
               required
             />
@@ -85,8 +102,11 @@ function FormScreen({ onSubmit, onBack }) {
             <input
               type="text"
               value={formData.clima}
-              onChange={(e) => setFormData({ ...formData, clima: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, clima: e.target.value })
+              }
               className="w-full p-3 border border-gray-300 rounded-lg"
+              required
             />
           </div>
 
@@ -97,10 +117,13 @@ function FormScreen({ onSubmit, onBack }) {
               Qual o horário?
             </label>
             <input
-              type="text"
+              type="time"
               value={formData.horario}
-              onChange={(e) => setFormData({ ...formData, horario: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, horario: e.target.value })
+              }
               className="w-full p-3 border border-gray-300 rounded-lg"
+              required
             />
           </div>
 
@@ -113,23 +136,50 @@ function FormScreen({ onSubmit, onBack }) {
             <input
               type="text"
               value={formData.cabelo}
-              onChange={(e) => setFormData({ ...formData, cabelo: e.target.value })}
+              placeholder="Descreva brevemente(Cor, comprimento, estilo...)"
+              onChange={(e) =>
+                setFormData({ ...formData, cabelo: e.target.value })
+              }
               className="w-full p-3 border border-gray-300 rounded-lg"
+              required
             />
           </div>
 
-          {/* Cor */}
+          {/* CorPreferida */}
           <div className="bg-white p-6 rounded-xl shadow-sm">
             <label className="flex items-center font-semibold text-gray-900 mb-4">
               <Palette className="h-5 w-5 mr-2 text-purple-500" />
-              Cor
+              Cor Preferida
             </label>
             <input
               type="text"
-              value={formData.cor}
-              onChange={(e) => setFormData({ ...formData, cor: e.target.value })}
+              value={formData.corPreferida}
+              onChange={(e) =>
+                setFormData({ ...formData, corPreferida: e.target.value })
+              }
               className="w-full p-3 border border-gray-300 rounded-lg"
+              required
             />
+          </div>
+
+          {/* Contato */}
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <label className="flex items-center font-semibold text-gray-900 mb-4">
+              <MessageCircle className="h-5 w-5 mr-2 text-purple-500" />
+              Tom de pele
+            </label>
+            <select
+              value={formData.tomPele}
+              onChange={(e) =>
+                setFormData({ ...formData, tomPele: e.target.value })
+              }
+              className="w-full p-3 border border-gray-300 rounded-lg"
+            >
+              <option value="">Selecione</option>
+              <option value="branco">Branco</option>
+              <option value="pardo">Pardo</option>
+              <option value="preto">Preto</option>
+            </select>
           </div>
 
           {/* Idade */}
@@ -141,8 +191,28 @@ function FormScreen({ onSubmit, onBack }) {
             <input
               type="number"
               value={formData.idade}
-              onChange={(e) => setFormData({ ...formData, idade: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, idade: e.target.value })
+              }
               className="w-full p-3 border border-gray-300 rounded-lg"
+              required
+            />
+          </div>
+
+          {/* Altura */}
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <label className="flex items-center font-semibold text-gray-900 mb-4">
+              <Hash className="h-5 w-5 mr-2 text-orange-500" />
+              Altura (Somente Números)
+            </label>
+            <input
+              type="height"
+              value={formData.altura}
+              onChange={(e) =>
+                setFormData({ ...formData, altura: e.target.value })
+              }
+              className="w-full p-3 border border-gray-300 rounded-lg"
+              required
             />
           </div>
 
@@ -154,7 +224,9 @@ function FormScreen({ onSubmit, onBack }) {
             </label>
             <select
               value={formData.genero}
-              onChange={(e) => setFormData({ ...formData, genero: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, genero: e.target.value })
+              }
               className="w-full p-3 border border-gray-300 rounded-lg"
             >
               <option value="">Selecione</option>
@@ -177,6 +249,7 @@ function FormScreen({ onSubmit, onBack }) {
                 setFormData({ ...formData, identidadeGenero: e.target.value })
               }
               className="w-full p-3 border border-gray-300 rounded-lg"
+              required
             />
           </div>
 
@@ -188,7 +261,9 @@ function FormScreen({ onSubmit, onBack }) {
             </label>
             <textarea
               value={formData.estilo}
-              onChange={(e) => setFormData({ ...formData, estilo: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, estilo: e.target.value })
+              }
               className="w-full p-3 border border-gray-300 rounded-lg"
             />
           </div>
@@ -202,8 +277,11 @@ function FormScreen({ onSubmit, onBack }) {
             <input
               type="text"
               value={formData.imagem}
-              onChange={(e) => setFormData({ ...formData, imagem: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, imagem: e.target.value })
+              }
               className="w-full p-3 border border-gray-300 rounded-lg"
+              required
             />
           </div>
 
@@ -216,8 +294,11 @@ function FormScreen({ onSubmit, onBack }) {
             <input
               type="text"
               value={formData.local}
-              onChange={(e) => setFormData({ ...formData, local: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, local: e.target.value })
+              }
               className="w-full p-3 border border-gray-300 rounded-lg"
+              required
             />
           </div>
 
@@ -230,8 +311,11 @@ function FormScreen({ onSubmit, onBack }) {
             <input
               type="text"
               value={formData.duracao}
-              onChange={(e) => setFormData({ ...formData, duracao: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, duracao: e.target.value })
+              }
               className="w-full p-3 border border-gray-300 rounded-lg"
+              required
             />
           </div>
 
@@ -243,7 +327,9 @@ function FormScreen({ onSubmit, onBack }) {
             </label>
             <textarea
               value={formData.pecas}
-              onChange={(e) => setFormData({ ...formData, pecas: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, pecas: e.target.value })
+              }
               className="w-full p-3 border border-gray-300 rounded-lg"
             />
           </div>
@@ -263,6 +349,7 @@ function FormScreen({ onSubmit, onBack }) {
             />
           </div>
 
+          <ModalIndisponivel open={isModalOpen} onClose={handleCloseModal} />
           {/* Contato */}
           <div className="bg-white p-6 rounded-xl shadow-sm">
             <label className="flex items-center font-semibold text-gray-900 mb-4">
@@ -271,7 +358,16 @@ function FormScreen({ onSubmit, onBack }) {
             </label>
             <select
               value={formData.contato}
-              onChange={(e) => setFormData({ ...formData, contato: e.target.value })}
+              onChange={(e) => {
+                const value = e.target.value;
+                setFormData({ ...formData, contato: value });
+                if (value === "whatsapp") {
+                  handleOpenModal(); // abre o modal
+                  setFormData({ ...formData, telefone: null}); // limpa o telefone
+                } else {
+                  handleCloseModal(); // fecha se não for whatsapp
+                }
+              }}
               className="w-full p-3 border border-gray-300 rounded-lg"
             >
               <option value="">Selecione</option>
@@ -281,7 +377,7 @@ function FormScreen({ onSubmit, onBack }) {
           </div>
 
           {/* Telefone */}
-          {formData.contato === "whatsapp" && (
+          {/* {(formData.contato === "whatsapp" ) && (
             <div className="bg-white p-6 rounded-xl shadow-sm">
               <label className="flex items-center font-semibold text-gray-900 mb-4">
                 <Phone className="h-5 w-5 mr-2 text-green-500" />
@@ -294,9 +390,10 @@ function FormScreen({ onSubmit, onBack }) {
                   setFormData({ ...formData, telefone: e.target.value })
                 }
                 className="w-full p-3 border border-gray-300 rounded-lg"
+                required
               />
             </div>
-          )}
+          )} */}
 
           {/* Submit */}
           <button
