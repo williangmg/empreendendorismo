@@ -46,6 +46,7 @@ function FormScreen({ onSubmit, onBack }) {
     tomPele: "",
     telefone: "",
     altura: "",
+    email: "",
   });
 
   const handleSubmit = (e) => {
@@ -375,6 +376,26 @@ function FormScreen({ onSubmit, onBack }) {
               <option value="email">Email</option>
             </select>
           </div>
+
+          {/* Email - só aparece se escolher email */}
+          {formData.contato === "email" && (
+            <div className="bg-white p-6 rounded-xl shadow-sm">
+              <label className="flex items-center font-semibold text-gray-900 mb-4">
+                <Mail className="h-5 w-5 mr-2 text-blue-500" />
+                Endereço de Email
+              </label>
+              <input
+                type="email"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+                placeholder="seu@email.com"
+                className="w-full p-3 border border-gray-300 rounded-lg"
+                required
+              />
+            </div>
+          )}
 
           {/* Telefone */}
           {/* {(formData.contato === "whatsapp" ) && (

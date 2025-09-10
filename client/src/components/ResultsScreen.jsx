@@ -1,5 +1,6 @@
-import React from "react";
-import { ArrowLeft } from "lucide-react";
+import React, { useState } from "react";
+import { ArrowLeft, Share2, MessageCircle, Instagram } from "lucide-react";
+import ModalIndisponivel from "./ModalIndisponivel";
 
 // Componente auxiliar para exibir cada item do look de forma organizada
 function LookItemCard({ category, item }) {
@@ -81,6 +82,49 @@ function LookItemCard({ category, item }) {
 }
 
 function ResultsScreen({ recommendations, onBack }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleCloseModal = () => setIsModalOpen(false);
+  const handleOpenModal = () => setIsModalOpen(true);
+
+  // Função para gerar mensagem para WhatsApp
+  const generateWhatsAppMessage = () => {
+    if (!recommendations) return "";
+    
+    let message = "🌟 Meu Look Personalizado! 🌟\n\n";
+    message += "✨ Acabei de receber uma consultoria de moda incrível!\n\n";
+    
+    if (recommendations.roupas) {
+      message += `👗 Roupa: ${recommendations.roupas.nome}\n`;
+      message += `🎨 Cor: ${recommendations.roupas.cor}\n\n`;
+    }
+    
+    if (recommendations.calca) {
+      message += `👖 Calça: ${recommendations.calca.nome}\n`;
+      message += `🎨 Cor: ${recommendations.calca.cor}\n\n`;
+    }
+    
+    if (recommendations.sapatos) {
+      message += `👠 Sapatos: ${recommendations.sapatos.nome}\n`;
+      message += `🎨 Cor: ${recommendations.sapatos.cor}\n\n`;
+    }
+    
+    if (recommendations.acessorio) {
+      message += `💎 Acessório: ${recommendations.acessorio.nome}\n`;
+      message += `🎨 Cor: ${recommendations.acessorio.cor}\n\n`;
+    }
+    
+    message += "💫 Que combinação perfeita! Adorei o resultado!\n";
+    message += "#LookPersonalizado #ModaIA #EstiloUnico";
+    
+    return encodeURIComponent(message);
+  };
+
+  const handleWhatsAppShare = () => {
+    const message = generateWhatsAppMessage();
+    const whatsappUrl = `https://wa.me/?text=${message}`;
+    window.open(whatsappUrl, '_blank');
+  };
   // Mapeia as chaves do objeto para títulos amigáveis em português
   const categories = {
     superior: "Parte Superior",
@@ -94,21 +138,43 @@ function ResultsScreen({ recommendations, onBack }) {
     <div className="min-h-screen p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex items-center mb-8">
-          <button
-            onClick={onBack}
-            className="mr-4 p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            <ArrowLeft className="h-6 w-6 text-gray-600" />
-          </button>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Seu Look Personalizado
-            </h1>
-            <p className="text-gray-600 mt-1">
-              Criamos uma combinação perfeita com base nas suas preferências.
-            </p>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center">
+            <button
+              onClick={onBack}
+              className="mr-4 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <ArrowLeft className="h-6 w-6 text-gray-600" />
+            </button>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Seu Look Personalizado
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Criamos uma combinação perfeita com base nas suas preferências.
+              </p>
+            </div>
           </div>
+          
+          {/* Botões de Compartilhamento */}
+          {recommendations && (
+            <div className="flex gap-3">
+              <button
+                onClick={handleWhatsAppShare}
+                className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors shadow-md"
+              >
+                <MessageCircle className="h-4 w-4" />
+                WhatsApp
+              </button>
+              <button
+                onClick={handleOpenModal}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-colors shadow-md"
+              >
+                <Instagram className="h-4 w-4" />
+                Instagram
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Grade de Resultados */}
@@ -132,6 +198,9 @@ function ResultsScreen({ recommendations, onBack }) {
             </p>
           </div>
         )}
+        
+        {/* Modal de Indisponível */}
+        <ModalIndisponivel open={isModalOpen} onClose={handleCloseModal} />
       </div>
     </div>
   );
