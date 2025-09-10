@@ -97,8 +97,11 @@ def create_prompt(preferences):
             "imagem": "https://images.pexels.com/photos/1413420/pexels-photo-1413420.jpeg"
           }}
         }}
-        
-        IMPORTANTE: O campo "cores" NUNCA deve estar vazio. Sempre forneça pelo menos uma cor principal e, se possível, uma cor secundária relacionado a cada uma das coisas que sugeriu.
+
+IMPORTANTE: O campo "cores" NUNCA deve estar vazio. Sempre forneça pelo menos uma cor principal e, se possível, uma cor secundária relacionada a cada item. 
+Cada cor **deve ser APENAS UMA PALAVRA**, por exemplo: "vermelho", "azul", "verde". 
+Não use adjetivos, múltiplas palavras ou combinações.
+
 
         Agora, gere o objeto JSON com base nas preferências do usuário.
     """
