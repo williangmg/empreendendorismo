@@ -23,27 +23,54 @@ Sistema de consultoria de moda personalizada usando Google Gemini AI, com envio 
 - Resend (email)
 - Flask-CORS
 
-## 📦 Deploy na Vercel
+## 📦 Deploy
 
-### 1. Configurar Variáveis de Ambiente
+### Frontend (Vercel) - SIMPLIFICADO ✅
 
-No painel da Vercel, adicione estas variáveis:
+1. **Conecte o repositório à Vercel**
+   - Vá em https://vercel.com
+   - Import repository: `DallaVec/style-ai2-v3`
 
+2. **A Vercel detectará automaticamente:**
+   - Framework: Vite
+   - Build Command: `cd client && npm run build`
+   - Output Directory: `client/dist`
+
+3. **Deploy automático funcionará!** 🎉
+
+### Backend (Separado)
+
+Para o backend, você tem algumas opções:
+
+**Opção 1: Railway** (Recomendado)
+```bash
+# Deploy automático do backend Python
+railway login
+railway init
+railway up
 ```
-GEMINI_API_KEY=sua_chave_gemini_aqui
-RESEND_API_KEY=sua_chave_resend_aqui  
+
+**Opção 2: Render**
+- Conecte o repositório
+- Configure para rodar `server/server.py`
+
+**Opção 3: PythonAnywhere**
+- Upload dos arquivos do server/
+- Configure Flask app
+
+### Variáveis de Ambiente
+
+**Backend:**
+```
+GEMINI_API_KEY=sua_chave_gemini
+RESEND_API_KEY=sua_chave_resend  
 EMAIL_FROM=noreply@stylo.ai
 ```
 
-### 2. Deploy Automático
-
-1. Conecte o repositório GitHub à Vercel
-2. A Vercel detectará automaticamente o `vercel.json`
-3. Deploy será feito automaticamente
-
-### 3. Domínio Personalizado
-
-Configure seu domínio `stylo.ai` nas configurações da Vercel.
+**Frontend (.env.production):**
+```
+VITE_API_URL=https://sua-url-backend.com
+```
 
 ## 🔧 Desenvolvimento Local
 
@@ -72,7 +99,10 @@ O sistema usa Resend para envio de emails profissionais:
 
 - `POST /api/recommendations` - Gerar recomendações de moda
 - `POST /api/test-email` - Testar envio de email
+- `GET /api/health` - Health check
 
 ---
+
+**Status:** ✅ Frontend pronto para Vercel | Backend precisa de hospedagem separada
 
 Desenvolvido para consultoria de moda com IA 🎨✨
