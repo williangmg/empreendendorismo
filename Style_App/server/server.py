@@ -1,27 +1,33 @@
 # server/server.py
 import os
-import json
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_mail import Mail, Message
 import google.generativeai as genai
 from dotenv import load_dotenv
+
+# Carrega variáveis de ambiente
 load_dotenv()
+
 app = Flask(__name__)
 CORS(app)
 
+# Configuração para Railway - PORT dinâmico
+port = int(os.environ.get('PORT', 3001))
+
+# Configuração do Flask-Mail para Gmail
 # Configuração do Flask-Mail para Gmail
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'ai.stylo.look@gmail.com'  # Seu email
-app.config['MAIL_PASSWORD'] = os.environ.get('GMAIL_APP_PASSWORD', '')  # App Password do Gmail
-app.config['MAIL_DEFAULT_SENDER'] = 'ai.stylo.look@gmail.com'
+app.config['MAIL_USERNAME'] = os.environ.get('GMAIL_USER', 'ai.stylo.look@gmail.com')
+app.config['MAIL_PASSWORD'] = os.environ.get('GMAIL_APP_PASSWORD', '')
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('GMAIL_USER', 'ai.stylo.look@gmail.com')
 
 mail = Mail(app)
 
-# Configurar Gemini API Key diretamente
-genai.configure(api_key="AIzaSyDrZZzMt4HkN5YVaBRJqOHawcAvWDj2hko")
+# Configurar Gemini API Key via variável de ambiente
+genai.configure(api_key=os.environ.get('GEMINI_API_KEY', 'AIzaSyDrZZzMt4HkN5YVaBRJqOHawcAvWDj2hko'))
 
 def create_prompt(preferences):
     prompt_details = []
@@ -490,4 +496,4 @@ def login():
         return jsonify({'error': 'Erro interno do servidor'}), 500
 
 if __name__ == "__main__":
-    app.run(port=3001, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=False)
