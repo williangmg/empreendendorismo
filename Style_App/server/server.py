@@ -414,86 +414,86 @@ def generate_email_html(recommendations, user_preferences):
     return html
 
 # Sistema de Autenticação Simples
-USERS_FILE = 'users.json'
+# USERS_FILE = 'users.json'
 
-def load_users():
-    """Carrega usuários do arquivo JSON"""
-    try:
-        with open(USERS_FILE, 'r') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return {}
+# def load_users():
+#     """Carrega usuários do arquivo JSON"""
+#     try:
+#         with open(USERS_FILE, 'r') as f:
+#             return json.load(f)
+#     except FileNotFoundError:
+#         return {}
 
-def save_users(users):
-    """Salva usuários no arquivo JSON"""
-    with open(USERS_FILE, 'w') as f:
-        json.dump(users, f, indent=2)
+# def save_users(users):
+#     """Salva usuários no arquivo JSON"""
+#     with open(USERS_FILE, 'w') as f:
+#         json.dump(users, f, indent=2)
 
-import hashlib
+# import hashlib
 
-def hash_password(password):
-    """Hash simples da senha"""
-    return hashlib.sha256(password.encode()).hexdigest()
+# def hash_password(password):
+#     """Hash simples da senha"""
+#     return hashlib.sha256(password.encode()).hexdigest()
 
-@app.route('/api/register', methods=['POST'])
-def register():
-    """Registra um novo usuário"""
-    try:
-        data = request.get_json()
-        email = data.get('email', '').strip().lower()
-        password = data.get('password', '')
-        name = data.get('name', '').strip()
+# @app.route('/api/register', methods=['POST'])
+# def register():
+#     """Registra um novo usuário"""
+#     try:
+#         data = request.get_json()
+#         email = data.get('email', '').strip().lower()
+#         password = data.get('password', '')
+#         name = data.get('name', '').strip()
 
-        if not email or not password or not name:
-            return jsonify({'error': 'Todos os campos são obrigatórios'}), 400
+#         if not email or not password or not name:
+#             return jsonify({'error': 'Todos os campos são obrigatórios'}), 400
 
-        users = load_users()
+#         users = load_users()
         
-        if email in users:
-            return jsonify({'error': 'Email já está em uso'}), 400
+#         if email in users:
+#             return jsonify({'error': 'Email já está em uso'}), 400
 
-        # Adiciona o usuário
-        users[email] = {
-            'name': name,
-            'password': hash_password(password)
-        }
+#         # Adiciona o usuário
+#         users[email] = {
+#             'name': name,
+#             'password': hash_password(password)
+#         }
         
-        save_users(users)
+#         save_users(users)
         
-        return jsonify({'message': 'Usuário criado com sucesso!'}), 201
+#         return jsonify({'message': 'Usuário criado com sucesso!'}), 201
 
-    except Exception as e:
-        return jsonify({'error': 'Erro interno do servidor'}), 500
+#     except Exception as e:
+#         return jsonify({'error': 'Erro interno do servidor'}), 500
 
-@app.route('/api/login', methods=['POST'])
-def login():
-    """Faz login do usuário"""
-    try:
-        data = request.get_json()
-        email = data.get('email', '').strip().lower()
-        password = data.get('password', '')
+# @app.route('/api/login', methods=['POST'])
+# def login():
+#     """Faz login do usuário"""
+#     try:
+#         data = request.get_json()
+#         email = data.get('email', '').strip().lower()
+#         password = data.get('password', '')
 
-        if not email or not password:
-            return jsonify({'error': 'Email e senha são obrigatórios'}), 400
+#         if not email :
+#             return jsonify({'error': 'Email é obrigatório'}), 400
 
-        users = load_users()
+#         users = load_users()
         
-        if email not in users:
-            return jsonify({'error': 'Email ou senha incorretos'}), 401
+#         if email not in users:
+#             return jsonify({'error': 'Email ou senha incorretos'}), 401
 
-        if users[email]['password'] != hash_password(password):
-            return jsonify({'error': 'Email ou senha incorretos'}), 401
+#         if users[email]['password'] != hash_password(password):
+#             return jsonify({'error': 'Email ou senha incorretos'}), 401
 
-        return jsonify({
-            'message': 'Login realizado com sucesso!',
-            'user': {
-                'email': email,
-                'name': users[email]['name']
-            }
-        }), 200
+#         return jsonify({
+#             'message': 'Login realizado com sucesso!',
+#             'user': {
+#                 'email': email,
+#                 'name': users[email]['name']
+#             }
+#         }), 200
 
-    except Exception as e:
-        return jsonify({'error': 'Erro interno do servidor'}), 500
+    # except Exception as e:
+    #     return jsonify({'error': 'Erro interno do servidor'}), 500
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=port, debug=False)

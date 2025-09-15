@@ -1,5 +1,7 @@
+
+
 import React, { useState } from "react";
-import AuthScreen from "./components/AuthScreen";
+iimport AuthScreen from "./components/AuthScreen";
 import ChoiceScreen from "./components/ChoiceScreen";
 import FormScreen from "./components/FormScreen";
 import ChatbotScreen from "./components/ChatbotScreen";
@@ -138,6 +140,3 @@ function App() {
       {renderCurrentScreen()}
     </div>
   );
-}
-
-export default App;
