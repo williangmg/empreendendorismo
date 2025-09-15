@@ -1,0 +1,2 @@
+# requirements.txt - Adicione estas dependências
+flask-mail==0.9.1

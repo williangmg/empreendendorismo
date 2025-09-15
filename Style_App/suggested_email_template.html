@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stylo AI - Recomendações</title>
+  <style>
+    /* ===== Reset ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(120deg, #ece9f1, #f7f8fc);
+      color: #2d2d2d;
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    /* ===== Container ===== */
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+
+    /* ===== Header ===== */
+    .header {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      padding: 40px 20px;
+      text-align: center;
+      color: #fff;
+      position: relative;
+    }
+
+    .header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    /* ===== Content ===== */
+    .content {
+      padding: 35px;
+    }
+
+    .greeting {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 25px;
+      color: #222;
+    }
+
+    /* ===== Card de informações ===== */
+    .event-info {
+      background: linear-gradient(145deg, #f8f9ff, #ffffff);
+      padding: 25px;
+      border-radius: 20px;
+      margin-bottom: 35px;
+      border: 2px solid #e0e4ff;
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+    }
+
+    .event-info h3 {
+      margin-bottom: 20px;
+      font-size: 18px;
+      color: #5b6ee1;
+      font-weight: 700;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      font-size: 15px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .info-row:last-of-type {
+      border-bottom: none;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: #555;
+      flex: 1;
+    }
+
+    .info-value {
+      flex: 2;
+      text-align: right;
+      color: #333;
+      font-weight: 500;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ===== Recomendações ===== */
+    .recommendations {
+      margin-top: 35px;
+    }
+
+    .recommendations h3 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 25px;
+      color: #2c3e50;
+      position: relative;
+      padding-bottom: 10px;
+      border-bottom: 3px solid;
+      border-image: linear-gradient(90deg, #667eea, #764ba2) 1;
+    }
+
+    .recommendation-text {
+      background: linear-gradient(135deg, #667eea08, #764ba208);
+      border: 2px solid #667eea20;
+      padding: 35px;
+      border-radius: 25px;
+      font-size: 16px;
+      color: #333;
+      line-height: 1.9;
+      position: relative;
+      box-shadow: 0 12px 35px rgba(102, 126, 234, 0.15);
+      white-space: pre-line;
+    }
+
+    .recommendation-text::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+
+    /* ===== Footer ===== */
+    .footer {
+      background: linear-gradient(135deg, #f7f8fc, #ede9f1);
+      text-align: center;
+      padding: 25px;
+      font-size: 14px;
+      color: #555;
+      border-top: 1px solid #e5e5e5;
+    }
+
+    .footer .heart {
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    @media (max-width: 600px) {
+      .content {
+        padding: 25px;
+      }
+
+      .info-row {
+        flex-direction: column;
+        text-align: left;
+      }
+
+      .info-value {
+        text-align: left;
+        margin-top: 4px;
+      }
+
+      .recommendation-text {
+        padding: 25px;
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Stylo AI - Suas Recomendações</h1>
+    </div>
+
+    <div class="content">
+      <div class="greeting">
+        Olá {{to_name}}!
+      </div>
+
+      <div class="event-info">
+        <h3>Informações do Evento</h3>
+
+        <div class="info-row">
+          <span class="info-label">Tipo de Evento:</span>
+          <span class="info-value">{{selected_color}}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">Clima/Temperatura:</span>
+          <span class="info-value">{{selected_size}}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">Horário:</span>
+          <span class="info-value">{{product_colors}}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">Local:</span>
+          <span class="info-value">{{event_location}}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">Duração:</span>
+          <span class="info-value">{{event_duration}}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">Estilo Preferido:</span>
+          <span class="info-value">{{product_sizes}}</span>
+        </div>
+      </div>
+
+      <div class="recommendations">
+        <h3>Sua Recomendação Personalizada</h3>
+        <div class="recommendation-text">{{message}}</div>
+      </div>
+
+      <div class="event-info" style="margin-top: 30px;">
+        <h3>Detalhes Completos</h3>
+        <div class="recommendation-text" style="font-size: 14px; background: linear-gradient(135deg, #f8f9ff, #ffffff);">
+          {{product_details}}
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      Desenvolvido com <span class="heart">amor</span> pela equipe Stylo AI
+    </div>
+  </div>
+</body>
+</html>

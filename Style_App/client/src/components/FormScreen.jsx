@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import ModalIndisponivel from "./ModalIndisponivel";
 
-function FormScreen({ onSubmit, onBack }) {
+function FormScreen({ onSubmit, onBack, user }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCloseModal = () => setIsModalOpen(false);
@@ -35,7 +35,6 @@ function FormScreen({ onSubmit, onBack }) {
     corPreferida: "",
     idade: "",
     genero: "",
-    identidadeGenero: "",
     estilo: "",
     imagem: "",
     local: "",
@@ -49,19 +48,52 @@ function FormScreen({ onSubmit, onBack }) {
     email: "",
   });
 
+  // Estilos para sliders
+  const sliderStyle = `
+    .slider::-webkit-slider-thumb {
+      appearance: none;
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: #f59e0b;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      cursor: pointer;
+    }
+    
+    .slider::-moz-range-thumb {
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: #f59e0b;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      cursor: pointer;
+      border: none;
+    }
+  `;
+
   const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // Se a opção de contato for email, usar o email do usuário logado
+    const finalFormData = {
+      ...formData,
+      email: formData.contato === "email" ? user?.email : formData.email
+    };
+    
     if (formData.contato === "whatsapp") {
       handleOpenModal();
     } else {
       handleCloseModal();
     }
 
-    e.preventDefault();
-    onSubmit(formData);
+    onSubmit(finalFormData);
   };
 
   return (
     <div className="min-h-screen p-6">
+      <style>{sliderStyle}</style>
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center mb-8">
@@ -100,15 +132,23 @@ function FormScreen({ onSubmit, onBack }) {
               <Sun className="h-5 w-5 mr-2 text-yellow-500" />
               Qual o clima na data?
             </label>
-            <input
-              type="text"
+            <select
               value={formData.clima}
               onChange={(e) =>
                 setFormData({ ...formData, clima: e.target.value })
               }
-              className="w-full p-3 border border-gray-300 rounded-lg"
+              className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors"
               required
-            />
+            >
+              <option value="">Selecione o clima</option>
+              <option value="ensolarado">☀️ Ensolarado</option>
+              <option value="nublado">⛅ Nublado</option>
+              <option value="chuvoso">🌧️ Chuvoso</option>
+              <option value="frio">❄️ Frio</option>
+              <option value="quente">🔥 Quente</option>
+              <option value="ventoso">💨 Ventoso</option>
+              <option value="ameno">🌤️ Ameno</option>
+            </select>
           </div>
 
           {/* Horário */}
@@ -152,15 +192,31 @@ function FormScreen({ onSubmit, onBack }) {
               <Palette className="h-5 w-5 mr-2 text-purple-500" />
               Cor Preferida
             </label>
-            <input
-              type="text"
+            <select
               value={formData.corPreferida}
               onChange={(e) =>
                 setFormData({ ...formData, corPreferida: e.target.value })
               }
-              className="w-full p-3 border border-gray-300 rounded-lg"
+              className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
               required
-            />
+            >
+              <option value="">Selecione sua cor preferida</option>
+              <option value="preto">⚫ Preto</option>
+              <option value="branco">⚪ Branco</option>
+              <option value="azul">🔵 Azul</option>
+              <option value="vermelho">🔴 Vermelho</option>
+              <option value="verde">🟢 Verde</option>
+              <option value="amarelo">🟡 Amarelo</option>
+              <option value="rosa">🩷 Rosa</option>
+              <option value="roxo">🟣 Roxo</option>
+              <option value="laranja">🟠 Laranja</option>
+              <option value="marrom">🟤 Marrom</option>
+              <option value="cinza">⚫ Cinza</option>
+              <option value="dourado">✨ Dourado</option>
+              <option value="prateado">🪙 Prateado</option>
+              <option value="navy">🔵 Azul Marinho</option>
+              <option value="bege">🟫 Bege</option>
+            </select>
           </div>
 
           {/* Contato */}
@@ -187,34 +243,54 @@ function FormScreen({ onSubmit, onBack }) {
           <div className="bg-white p-6 rounded-xl shadow-sm">
             <label className="flex items-center font-semibold text-gray-900 mb-4">
               <Hash className="h-5 w-5 mr-2 text-orange-500" />
-              Idade (Somente Números)
+              Idade: {formData.idade || 25} anos
             </label>
-            <input
-              type="number"
-              value={formData.idade}
-              onChange={(e) =>
-                setFormData({ ...formData, idade: e.target.value })
-              }
-              className="w-full p-3 border border-gray-300 rounded-lg"
-              required
-            />
+            <div className="space-y-4">
+              <input
+                type="range"
+                min="15"
+                max="80"
+                value={formData.idade || 25}
+                onChange={(e) =>
+                  setFormData({ ...formData, idade: e.target.value })
+                }
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                style={{
+                  background: `linear-gradient(to right, #f59e0b 0%, #f59e0b ${((formData.idade || 25) - 15) / (80 - 15) * 100}%, #e5e7eb ${((formData.idade || 25) - 15) / (80 - 15) * 100}%, #e5e7eb 100%)`
+                }}
+              />
+              <div className="flex justify-between text-sm text-gray-500">
+                <span>15 anos</span>
+                <span>80 anos</span>
+              </div>
+            </div>
           </div>
 
           {/* Altura */}
           <div className="bg-white p-6 rounded-xl shadow-sm">
             <label className="flex items-center font-semibold text-gray-900 mb-4">
               <Hash className="h-5 w-5 mr-2 text-orange-500" />
-              Altura (Somente Números)
+              Altura: {formData.altura || 170} cm
             </label>
-            <input
-              type="height"
-              value={formData.altura}
-              onChange={(e) =>
-                setFormData({ ...formData, altura: e.target.value })
-              }
-              className="w-full p-3 border border-gray-300 rounded-lg"
-              required
-            />
+            <div className="space-y-4">
+              <input
+                type="range"
+                min="140"
+                max="220"
+                value={formData.altura || 170}
+                onChange={(e) =>
+                  setFormData({ ...formData, altura: e.target.value })
+                }
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                style={{
+                  background: `linear-gradient(to right, #f59e0b 0%, #f59e0b ${((formData.altura || 170) - 140) / (220 - 140) * 100}%, #e5e7eb ${((formData.altura || 170) - 140) / (220 - 140) * 100}%, #e5e7eb 100%)`
+                }}
+              />
+              <div className="flex justify-between text-sm text-gray-500">
+                <span>140 cm</span>
+                <span>220 cm</span>
+              </div>
+            </div>
           </div>
 
           {/* Gênero */}
@@ -237,36 +313,33 @@ function FormScreen({ onSubmit, onBack }) {
             </select>
           </div>
 
-          {/* Identidade de gênero */}
-          <div className="bg-white p-6 rounded-xl shadow-sm">
-            <label className="flex items-center font-semibold text-gray-900 mb-4">
-              <Heart className="h-5 w-5 mr-2 text-red-500" />
-              Identidade de gênero
-            </label>
-            <input
-              type="text"
-              value={formData.identidadeGenero}
-              onChange={(e) =>
-                setFormData({ ...formData, identidadeGenero: e.target.value })
-              }
-              className="w-full p-3 border border-gray-300 rounded-lg"
-              required
-            />
-          </div>
-
           {/* Preferências de estilo */}
           <div className="bg-white p-6 rounded-xl shadow-sm">
             <label className="flex items-center font-semibold text-gray-900 mb-4">
               <Shirt className="h-5 w-5 mr-2 text-indigo-500" />
               Preferências de estilo
             </label>
-            <textarea
+            <select
               value={formData.estilo}
               onChange={(e) =>
                 setFormData({ ...formData, estilo: e.target.value })
               }
-              className="w-full p-3 border border-gray-300 rounded-lg"
-            />
+              className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+            >
+              <option value="">Selecione seu estilo preferido</option>
+              <option value="casual">👕 Casual</option>
+              <option value="elegante">👔 Elegante/Formal</option>
+              <option value="moderno">✨ Moderno</option>
+              <option value="vintage">🕰️ Vintage/Retrô</option>
+              <option value="boho">🌸 Boho/Hippie</option>
+              <option value="minimalista">⚪ Minimalista</option>
+              <option value="streetwear">🛹 Streetwear/Urbano</option>
+              <option value="romantico">💕 Romântico</option>
+              <option value="rock">🤘 Rock/Alternativo</option>
+              <option value="classico">👑 Clássico/Atemporal</option>
+              <option value="esportivo">🏃 Esportivo</option>
+              <option value="sofisticado">💎 Sofisticado</option>
+            </select>
           </div>
 
           {/* Tipo de imagem */}
@@ -275,15 +348,28 @@ function FormScreen({ onSubmit, onBack }) {
               <FileText className="h-5 w-5 mr-2 text-gray-500" />
               Qual tipo de imagem pretende passar?
             </label>
-            <input
-              type="text"
+            <select
               value={formData.imagem}
               onChange={(e) =>
                 setFormData({ ...formData, imagem: e.target.value })
               }
-              className="w-full p-3 border border-gray-300 rounded-lg"
+              className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-colors"
               required
-            />
+            >
+              <option value="">Selecione a imagem que quer passar</option>
+              <option value="profissional">💼 Profissional/Corporativa</option>
+              <option value="confiante">💪 Confiante/Poderosa</option>
+              <option value="elegante">✨ Elegante/Sofisticada</option>
+              <option value="criativa">🎨 Criativa/Artística</option>
+              <option value="acessivel">😊 Acessível/Amigável</option>
+              <option value="misteriosa">🌙 Misteriosa/Enigmática</option>
+              <option value="jovial">🌟 Jovial/Energética</option>
+              <option value="serena">🕊️ Serena/Calma</option>
+              <option value="ousada">🔥 Ousada/Corajosa</option>
+              <option value="romantica">💕 Romântica/Delicada</option>
+              <option value="intelectual">📚 Intelectual/Séria</option>
+              <option value="espontanea">🎈 Espontânea/Divertida</option>
+            </select>
           </div>
 
           {/* Local do evento */}
@@ -380,20 +466,14 @@ function FormScreen({ onSubmit, onBack }) {
           {/* Email - só aparece se escolher email */}
           {formData.contato === "email" && (
             <div className="bg-white p-6 rounded-xl shadow-sm">
-              <label className="flex items-center font-semibold text-gray-900 mb-4">
+              <div className="flex items-center font-semibold text-gray-900 mb-4">
                 <Mail className="h-5 w-5 mr-2 text-blue-500" />
-                Endereço de Email
-              </label>
-              <input
-                type="email"
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                placeholder="seu@email.com"
-                className="w-full p-3 border border-gray-300 rounded-lg"
-                required
-              />
+                <span>Email para recebimento: </span>
+                <span className="text-blue-600 ml-2">{user?.email}</span>
+              </div>
+              <p className="text-sm text-gray-500">
+                As recomendações serão enviadas para o email da sua conta.
+              </p>
             </div>
           )}
 

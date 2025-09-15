@@ -3,36 +3,25 @@ import os
 import json
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_mail import Mail, Message
 import google.generativeai as genai
 from dotenv import load_dotenv
-import resend
-
 load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# Configuração do Resend
-resend_api_key = os.environ.get('RESEND_API_KEY')
-email_from = os.environ.get('EMAIL_FROM')
+# Configuração do Flask-Mail para Gmail
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'ai.stylo.look@gmail.com'  # Seu email
+app.config['MAIL_PASSWORD'] = os.environ.get('GMAIL_APP_PASSWORD', '')  # App Password do Gmail
+app.config['MAIL_DEFAULT_SENDER'] = 'ai.stylo.look@gmail.com'
 
-# Debug: verificar se as variáveis estão sendo lidas
-print(f"🔍 RESEND_API_KEY: {'Definido' if resend_api_key else 'Não definido'}")
-print(f"🔍 EMAIL_FROM: {email_from}")
+mail = Mail(app)
 
-# Configurar Resend
-if resend_api_key:
-    resend.api_key = resend_api_key
-    EMAIL_ENABLED = True
-    print(f"✅ Resend configurado com email: {email_from}")
-else:
-    EMAIL_ENABLED = False
-    print("⚠️  AVISO: RESEND_API_KEY não configurado. Funcionalidade de email desabilitada.")
-
-try:
-    genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-except KeyError:
-    print("Erro: A variável de ambiente GEMINI_API_KEY não foi encontrada.")
-    exit()
+# Configurar Gemini API Key diretamente
+genai.configure(api_key="AIzaSyDrZZzMt4HkN5YVaBRJqOHawcAvWDj2hko")
 
 def create_prompt(preferences):
     prompt_details = []
@@ -161,60 +150,9 @@ def get_recommendations():
         return jsonify({"error": "Falha ao gerar recomendações.", "details": str(e)}), 500
 
 def send_recommendations_email(email, recommendations):
-    """Envia as recomendações por email usando Resend"""
-    try:
-        # Debug detalhado
-        print(f"🔍 Debug na função send_recommendations_email:")
-        print(f"   - EMAIL_ENABLED: {EMAIL_ENABLED}")
-        print(f"   - RESEND_API_KEY: {'Definido' if resend_api_key else 'Não definido'}")
-        print(f"   - EMAIL_FROM: {email_from}")
-        print(f"   - EMAIL DE DESTINO (parâmetro): {email}")
-        print(f"   - TIPO do email de destino: {type(email)}")
-        
-        if not EMAIL_ENABLED or not resend_api_key or not email_from:
-            raise Exception(f"Configuração de email não disponível - API Key: {'OK' if resend_api_key else 'FALTA'}, Email From: {'OK' if email_from else 'FALTA'}")
-            
-        # Criar o conteúdo HTML do email
-        html_content = create_email_html(recommendations)
-        
-        print(f"📧 Tentando enviar email para: {email}")
-        print(f"📧 Usando remetente: {email_from}")
-        
-        # Enviar email usando Resend
-        params = {
-            "from": email_from,
-            "to": email,  # Resend aceita string diretamente, não lista
-            "subject": "🌟 Seu Look Personalizado está pronto!",
-            "html": html_content,
-        }
-        
-        print(f"📤 Parâmetros FINAIS do email: {params}")
-        
-        try:
-            response = resend.Emails.send(params)
-            print(f"📥 Resposta do Resend: {response}")
-            print(f"✅ Email enviado com sucesso! ID: {response.get('id', 'N/A')}")
-            return True
-        except Exception as resend_error:
-            print(f"❌ Erro específico do Resend: {resend_error}")
-            print(f"❌ Tipo do erro: {type(resend_error)}")
-            if hasattr(resend_error, 'response'):
-                print(f"❌ Response do erro: {resend_error.response}")
-            raise resend_error
-        
-    except Exception as e:
-        error_msg = str(e)
-        print(f"❌ Erro ao enviar email: {error_msg}")
-        
-        # Diagnóstico de erros comuns
-        if "unauthorized" in error_msg.lower() or "401" in error_msg:
-            print("💡 Dica: Verifique se a API Key do Resend está correta")
-        elif "domain" in error_msg.lower():
-            print("💡 Dica: Verifique se o domínio no EMAIL_FROM está configurado no Resend")
-        elif "from" in error_msg.lower():
-            print("💡 Dica: Verifique o formato do EMAIL_FROM (ex: noreply@seudominio.com)")
-            
-        raise e
+    """Função de envio de email desabilitada (Resend removido)"""
+    print("Função de envio de email desabilitada. Resend removido do projeto.")
+    return False
 
 def create_email_html(recommendations):
     """Cria o conteúdo HTML do email com as recomendações"""
@@ -322,22 +260,234 @@ def test_email():
             "error": str(e)
         }), 500
 
-@app.route("/api/health", methods=["GET"])
-def health_check():
-    """Health check endpoint for Vercel"""
-    return jsonify({
-        "status": "healthy",
-        "message": "Stylo.ai API is running",
-        "version": "1.0.0"
-    })
+@app.route('/send-email', methods=['POST'])
+def send_email_route():
+    """Rota para envio de emails via Flask-Mail (mais confiável)"""
+    try:
+        data = request.json
+        to_email = data.get('to_email')
+        recommendations = data.get('recommendations')
+        user_preferences = data.get('user_preferences')
+        
+        if not to_email or not recommendations:
+            return jsonify({
+                "success": False,
+                "error": "Email e recomendações são obrigatórios"
+            }), 400
+        
+        # Criar o email
+        subject = "🌟 Suas Recomendações de Moda - Stylo AI"
+        
+        # Corpo do email em HTML
+        html_body = generate_email_html(recommendations, user_preferences)
+        
+        # Criar mensagem
+        msg = Message(
+            subject=subject,
+            recipients=[to_email],
+            html=html_body
+        )
+        
+        # Enviar email
+        mail.send(msg)
+        
+        print(f"✅ Email enviado com sucesso para {to_email}")
+        return jsonify({
+            "success": True,
+            "message": "Email enviado com sucesso!"
+        })
+        
+    except Exception as e:
+        print(f"❌ Erro ao enviar email: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
 
-@app.route("/", methods=["GET"])  
-def home():
-    """Home endpoint"""
-    return jsonify({
-        "message": "Stylo.ai Backend API",
-        "status": "running"
-    })
+def generate_email_html(recommendations, user_preferences):
+    """Gera o HTML do email com as recomendações"""
+    
+    # Dados do usuário
+    user_name = user_preferences.get('nome', 'Cliente')
+    evento = user_preferences.get('evento', 'Não especificado')
+    clima = user_preferences.get('clima', 'Não especificado')
+    horario = user_preferences.get('horario', 'Não especificado')
+    estilo = user_preferences.get('estilo', 'Não especificado')
+    cores = user_preferences.get('corPreferida', 'Não especificado')
+    altura = user_preferences.get('altura', 'Não especificado')
+    
+    # Montar detalhes das recomendações
+    look_details = []
+    
+    if recommendations.get('superior'):
+        item = recommendations['superior']
+        look_details.append(f"👗 Parte Superior: {item.get('nome', 'N/A')} ({item.get('cor', 'N/A')})")
+    
+    if recommendations.get('inferior'):
+        item = recommendations['inferior']
+        look_details.append(f"👖 Parte Inferior: {item.get('nome', 'N/A')} ({item.get('cor', 'N/A')})")
+    
+    if recommendations.get('calcado'):
+        item = recommendations['calcado']
+        look_details.append(f"👠 Calçado: {item.get('nome', 'N/A')} ({item.get('cor', 'N/A')})")
+    
+    if recommendations.get('acessorio'):
+        item = recommendations['acessorio']
+        look_details.append(f"💎 Acessório: {item.get('nome', 'N/A')} ({item.get('cor', 'N/A')})")
+    
+    if recommendations.get('cabelo'):
+        item = recommendations['cabelo']
+        look_details.append(f"💇 Cabelo: {item.get('nome', 'N/A')} ({item.get('cor', 'N/A')})")
+    
+    look_text = "\\n".join(look_details)
+    
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+            .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+            .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }}
+            .content {{ background: #f9f9f9; padding: 20px; }}
+            .look-section {{ background: white; padding: 20px; margin: 15px 0; border-radius: 8px; border: 1px solid #ddd; }}
+            .preferences {{ background: #e8f4fd; padding: 15px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #667eea; }}
+            .recommendations {{ background: white; padding: 20px; margin: 15px 0; border-radius: 8px; border: 1px solid #ddd; }}
+            .price {{ font-size: 1.2em; font-weight: bold; color: #667eea; }}
+            .footer {{ text-align: center; padding: 20px; color: #666; background: #f1f1f1; border-radius: 0 0 10px 10px; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🌟 Suas Recomendações de Moda Personalizadas</h1>
+                <p>Criado especialmente para você pela Stylo AI</p>
+            </div>
+            
+            <div class="content">
+                <p>Olá <strong>{user_name}</strong>! 👋</p>
+                
+                <p>Sua consultoria de moda personalizada está pronta! Nossa IA analisou suas preferências e criou o look perfeito para você.</p>
+                
+                <div class="preferences">
+                    <h3>📋 Suas Preferências</h3>
+                    <p><strong>🎉 Evento:</strong> {evento}</p>
+                    <p><strong>🌤️ Clima:</strong> {clima}</p>
+                    <p><strong>⏰ Horário:</strong> {horario}</p>
+                    <p><strong>✨ Estilo:</strong> {estilo}</p>
+                    <p><strong>🎨 Cores Preferidas:</strong> {cores}</p>
+                    <p><strong>📏 Altura:</strong> {altura}</p>
+                </div>
+                
+                <div class="look-section">
+                    <h2>✨ Look Personalizado Completo</h2>
+                    <p><strong>Criado por:</strong> Stylo AI Recommendations</p>
+                    <p><strong>Avaliação:</strong> ⭐ 5.0/5</p>
+                    <p><strong>Investimento:</strong> <span class="price">Consultoria Gratuita</span></p>
+                    
+                    <h3>🎯 Composição do Seu Look:</h3>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; white-space: pre-line;">{look_text}</div>
+                </div>
+                
+                <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border: 1px solid #ffeaa7; margin: 15px 0;">
+                    <p><strong>💡 Dica:</strong> Este look foi criado especialmente para você pela nossa IA de moda! Cada peça foi selecionada considerando suas preferências pessoais.</p>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p><strong>✨ Stylo AI - Recomendações Personalizadas de Moda ✨</strong></p>
+                <p>Enviado com 💜 pela nossa plataforma de consultoria em moda</p>
+                <p style="font-size: 0.9em; color: #888;">Obrigado por confiar na Stylo AI para suas escolhas de moda!</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
+    return html
+
+# Sistema de Autenticação Simples
+USERS_FILE = 'users.json'
+
+def load_users():
+    """Carrega usuários do arquivo JSON"""
+    try:
+        with open(USERS_FILE, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
+
+def save_users(users):
+    """Salva usuários no arquivo JSON"""
+    with open(USERS_FILE, 'w') as f:
+        json.dump(users, f, indent=2)
+
+import hashlib
+
+def hash_password(password):
+    """Hash simples da senha"""
+    return hashlib.sha256(password.encode()).hexdigest()
+
+@app.route('/api/register', methods=['POST'])
+def register():
+    """Registra um novo usuário"""
+    try:
+        data = request.get_json()
+        email = data.get('email', '').strip().lower()
+        password = data.get('password', '')
+        name = data.get('name', '').strip()
+
+        if not email or not password or not name:
+            return jsonify({'error': 'Todos os campos são obrigatórios'}), 400
+
+        users = load_users()
+        
+        if email in users:
+            return jsonify({'error': 'Email já está em uso'}), 400
+
+        # Adiciona o usuário
+        users[email] = {
+            'name': name,
+            'password': hash_password(password)
+        }
+        
+        save_users(users)
+        
+        return jsonify({'message': 'Usuário criado com sucesso!'}), 201
+
+    except Exception as e:
+        return jsonify({'error': 'Erro interno do servidor'}), 500
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    """Faz login do usuário"""
+    try:
+        data = request.get_json()
+        email = data.get('email', '').strip().lower()
+        password = data.get('password', '')
+
+        if not email or not password:
+            return jsonify({'error': 'Email e senha são obrigatórios'}), 400
+
+        users = load_users()
+        
+        if email not in users:
+            return jsonify({'error': 'Email ou senha incorretos'}), 401
+
+        if users[email]['password'] != hash_password(password):
+            return jsonify({'error': 'Email ou senha incorretos'}), 401
+
+        return jsonify({
+            'message': 'Login realizado com sucesso!',
+            'user': {
+                'email': email,
+                'name': users[email]['name']
+            }
+        }), 200
+
+    except Exception as e:
+        return jsonify({'error': 'Erro interno do servidor'}), 500
 
 if __name__ == "__main__":
     app.run(port=3001, debug=True)

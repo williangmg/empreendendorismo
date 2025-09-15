@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import LoginScreen from './components/LoginScreen';
+import AuthScreen from './components/AuthScreen';
 import ChoiceScreen from './components/ChoiceScreen';
 import FormScreen from './components/FormScreen';
 import ChatbotScreen from './components/ChatbotScreen';
@@ -8,16 +8,16 @@ import ProductDetailScreen from './components/ProductDetailScreen';
 import { Loader2 } from 'lucide-react'; // Ícone para a tela de carregamento
 
 function App() {
-  const [currentScreen, setCurrentScreen] = useState('login');
+  const [currentScreen, setCurrentScreen] = useState('auth');
   const [userPreferences, setUserPreferences] = useState(null);
   const [recommendations, setRecommendations] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
   // ADICIONADO: Estado para controlar a tela de carregamento
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
+  const handleAuthSuccess = (userData) => {
+    setUser(userData);
     setCurrentScreen('choice');
   };
 
@@ -33,8 +33,7 @@ function App() {
 
     try {
       // Faz a chamada para o seu backend Python
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-      const response = await fetch(`${apiUrl}/api/recommendations`, {
+      const response = await fetch('http://localhost:3001/api/recommendations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -70,6 +69,10 @@ function App() {
       setCurrentScreen('choice');
     } else if (currentScreen === 'form' || currentScreen === 'chatbot') {
       setCurrentScreen('choice');
+    } else if (currentScreen === 'choice') {
+      // Logout
+      setUser(null);
+      setCurrentScreen('auth');
     }
   };
 
@@ -79,12 +82,12 @@ function App() {
   // --- FUNÇÃO renderCurrentScreen FOI ATUALIZADA ---
   const renderCurrentScreen = () => {
     switch (currentScreen) {
-      case 'login':
-        return <LoginScreen onLogin={handleLogin} />;
+      case 'auth':
+        return <AuthScreen onAuthSuccess={handleAuthSuccess} />;
       case 'choice':
         return <ChoiceScreen onChoiceSelect={handleChoiceSelect} />;
       case 'form':
-        return <FormScreen onSubmit={handlePreferencesSubmit} onBack={handleBack} />;
+        return <FormScreen onSubmit={handlePreferencesSubmit} onBack={handleBack} user={user} />;
       case 'chatbot':
         return <ChatbotScreen onSubmit={handlePreferencesSubmit} onBack={handleBack} />;
       case 'results':
@@ -100,6 +103,7 @@ function App() {
         }
         return <ResultsScreen 
           recommendations={recommendations} 
+          userPreferences={userPreferences}
           onProductSelect={handleProductSelect}
           onBack={handleBack}
         />;
@@ -109,7 +113,7 @@ function App() {
           onBack={handleBack}
         />;
       default:
-        return <LoginScreen onLogin={handleLogin} />;
+        return <AuthScreen onAuthSuccess={handleAuthSuccess} />;
     }
   };
 
