@@ -1,7 +1,7 @@
 
 
 import React, { useState } from "react";
-iimport AuthScreen from "./components/AuthScreen";
+import Inicio from "./components/Inicio";
 import ChoiceScreen from "./components/ChoiceScreen";
 import FormScreen from "./components/FormScreen";
 import ChatbotScreen from "./components/ChatbotScreen";
@@ -85,7 +85,7 @@ function App() {
   const renderCurrentScreen = () => {
     switch (currentScreen) {
       case "auth":
-        return <AuthScreen onAuthSuccess={handleAuthSuccess} />;
+        return <Inicio onAuthSuccess={handleAuthSuccess} />;
       case "choice":
         return <ChoiceScreen onChoiceSelect={handleChoiceSelect} />;
       case "form":
@@ -131,12 +131,15 @@ function App() {
           <ProductDetailScreen product={selectedProduct} onBack={handleBack} />
         );
       default:
-        return <AuthScreen onAuthSuccess={handleAuthSuccess} />;
+        return <Inicio onAuthSuccess={handleAuthSuccess} />;
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      {renderCurrentScreen()}
-    </div>
-  );
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+        {renderCurrentScreen()}
+      </div>
+    );
+  }
+  
+  export default App;
