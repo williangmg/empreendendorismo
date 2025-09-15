@@ -5,6 +5,7 @@ from flask_cors import CORS
 from flask_mail import Mail, Message
 import google.generativeai as genai
 from dotenv import load_dotenv
+import json
 
 # Carrega variáveis de ambiente
 load_dotenv()
