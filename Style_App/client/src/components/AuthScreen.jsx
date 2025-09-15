@@ -1,41 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 function AuthScreen({ onAuthSuccess }) {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: ''
+    name: "",
+    email: "",
+    password: "",
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
-    setError(''); // Limpar erro ao digitar
+    setError(""); // Limpar erro ao digitar
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const endpoint = isLogin ? '/api/login' : '/api/register';
-      const body = isLogin 
+      const endpoint = isLogin ? "/api/login" : "/api/register";
+      const body = isLogin
         ? { email: formData.email, password: formData.password }
         : formData;
 
-      const response = await fetch(`http://localhost:3001${endpoint}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body)
-      });
+      const response = await fetch(
+        `https://empreendendorismo-production.up.railway.app${endpoint}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        }
+      );
 
       const data = await response.json();
 
@@ -46,15 +49,15 @@ function AuthScreen({ onAuthSuccess }) {
         } else {
           // Cadastro bem-sucedido, muda para login
           setIsLogin(true);
-          setFormData({ name: '', email: '', password: '' });
-          setError('Cadastro realizado com sucesso! Faça login agora.');
+          setFormData({ name: "", email: "", password: "" });
+          setError("Cadastro realizado com sucesso! Faça login agora.");
         }
       } else {
-        setError(data.error || 'Erro desconhecido');
+        setError(data.error || "Erro desconhecido");
       }
     } catch (error) {
-      setError('Erro de conexão. Verifique se o servidor está rodando.');
-      console.error('Erro:', error);
+      setError("Erro de conexão. Verifique se o servidor está rodando.");
+      console.error("Erro:", error);
     } finally {
       setLoading(false);
     }
@@ -62,8 +65,8 @@ function AuthScreen({ onAuthSuccess }) {
 
   const toggleMode = () => {
     setIsLogin(!isLogin);
-    setError('');
-    setFormData({ name: '', email: '', password: '' });
+    setError("");
+    setFormData({ name: "", email: "", password: "" });
   };
 
   return (
@@ -75,19 +78,23 @@ function AuthScreen({ onAuthSuccess }) {
         </div>
 
         <div className="flex rounded-lg bg-gray-100 p-1">
-          <button 
+          <button
             type="button"
             className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-              isLogin ? 'bg-white text-gray-900 shadow' : 'text-gray-500 hover:text-gray-700'
+              isLogin
+                ? "bg-white text-gray-900 shadow"
+                : "text-gray-500 hover:text-gray-700"
             }`}
             onClick={() => setIsLogin(true)}
           >
             Entrar
           </button>
-          <button 
+          <button
             type="button"
             className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-              !isLogin ? 'bg-white text-gray-900 shadow' : 'text-gray-500 hover:text-gray-700'
+              !isLogin
+                ? "bg-white text-gray-900 shadow"
+                : "text-gray-500 hover:text-gray-700"
             }`}
             onClick={() => setIsLogin(false)}
           >
@@ -98,7 +105,10 @@ function AuthScreen({ onAuthSuccess }) {
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           {!isLogin && (
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Nome completo
               </label>
               <input
@@ -115,7 +125,10 @@ function AuthScreen({ onAuthSuccess }) {
           )}
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               Email
             </label>
             <input
@@ -131,7 +144,10 @@ function AuthScreen({ onAuthSuccess }) {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               Senha
             </label>
             <input
@@ -147,33 +163,35 @@ function AuthScreen({ onAuthSuccess }) {
           </div>
 
           {error && (
-            <div className={`text-sm p-3 rounded ${
-              error.includes('sucesso') 
-                ? 'bg-green-100 text-green-700' 
-                : 'bg-red-100 text-red-700'
-            }`}>
+            <div
+              className={`text-sm p-3 rounded ${
+                error.includes("sucesso")
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-700"
+              }`}
+            >
               {error}
             </div>
           )}
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading}
             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
           >
-            {loading ? 'Carregando...' : (isLogin ? 'Entrar' : 'Criar conta')}
+            {loading ? "Carregando..." : isLogin ? "Entrar" : "Criar conta"}
           </button>
         </form>
 
         <div className="text-center">
           <p className="text-sm text-gray-600">
-            {isLogin ? 'Não tem uma conta?' : 'Já tem uma conta?'}
-            <button 
-              type="button" 
+            {isLogin ? "Não tem uma conta?" : "Já tem uma conta?"}
+            <button
+              type="button"
               className="ml-1 text-blue-600 hover:text-blue-500"
               onClick={toggleMode}
             >
-              {isLogin ? 'Cadastre-se' : 'Faça login'}
+              {isLogin ? "Cadastre-se" : "Faça login"}
             </button>
           </p>
         </div>
