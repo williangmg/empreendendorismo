@@ -75,13 +75,13 @@ function FormScreen({ onSubmit, onBack, user }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     // Se a opção de contato for email, usar o email do usuário logado
     const finalFormData = {
       ...formData,
-      email: formData.contato === "email" ? user?.email : formData.email
+      email: formData.contato === "email" ? user?.email : formData.email,
     };
-    
+
     if (formData.contato === "whatsapp") {
       handleOpenModal();
     } else {
@@ -256,7 +256,11 @@ function FormScreen({ onSubmit, onBack, user }) {
                 }
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                 style={{
-                  background: `linear-gradient(to right, #f59e0b 0%, #f59e0b ${((formData.idade || 25) - 15) / (80 - 15) * 100}%, #e5e7eb ${((formData.idade || 25) - 15) / (80 - 15) * 100}%, #e5e7eb 100%)`
+                  background: `linear-gradient(to right, #f59e0b 0%, #f59e0b ${
+                    (((formData.idade || 25) - 15) / (80 - 15)) * 100
+                  }%, #e5e7eb ${
+                    (((formData.idade || 25) - 15) / (80 - 15)) * 100
+                  }%, #e5e7eb 100%)`,
                 }}
               />
               <div className="flex justify-between text-sm text-gray-500">
@@ -283,7 +287,11 @@ function FormScreen({ onSubmit, onBack, user }) {
                 }
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                 style={{
-                  background: `linear-gradient(to right, #f59e0b 0%, #f59e0b ${((formData.altura || 170) - 140) / (220 - 140) * 100}%, #e5e7eb ${((formData.altura || 170) - 140) / (220 - 140) * 100}%, #e5e7eb 100%)`
+                  background: `linear-gradient(to right, #f59e0b 0%, #f59e0b ${
+                    (((formData.altura || 170) - 140) / (220 - 140)) * 100
+                  }%, #e5e7eb ${
+                    (((formData.altura || 170) - 140) / (220 - 140)) * 100
+                  }%, #e5e7eb 100%)`,
                 }}
               />
               <div className="flex justify-between text-sm text-gray-500">
@@ -450,7 +458,7 @@ function FormScreen({ onSubmit, onBack, user }) {
                 setFormData({ ...formData, contato: value });
                 if (value === "whatsapp") {
                   handleOpenModal(); // abre o modal
-                  setFormData({ ...formData, telefone: null}); // limpa o telefone
+                  setFormData({ ...formData, telefone: null }); // limpa o telefone
                 } else {
                   handleCloseModal(); // fecha se não for whatsapp
                 }
@@ -469,10 +477,18 @@ function FormScreen({ onSubmit, onBack, user }) {
               <div className="flex items-center font-semibold text-gray-900 mb-4">
                 <Mail className="h-5 w-5 mr-2 text-blue-500" />
                 <span>Email para recebimento: </span>
-                <span className="text-blue-600 ml-2">{user?.email}</span>
+                <input
+                  type="email"
+                  value={formData.contato === "email" ? user?.email : formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  className="w-full p-3 border border-gray-300 rounded-lg"
+                  required
+                />
               </div>
               <p className="text-sm text-gray-500">
-                As recomendações serão enviadas para o email da sua conta.
+                As recomendações serão enviadas para o email escolhido.
               </p>
             </div>
           )}
