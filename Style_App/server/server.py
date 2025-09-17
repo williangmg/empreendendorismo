@@ -73,7 +73,7 @@ def create_prompt(preferences):
           "superior": {{
             "nome": "Camisa de Seda Off-White",
             "descricao": "Uma camisa de seda elegante que traz um toque de sofisticação ao look, perfeita para o clima ameno do evento.",
-            "cores": ["Off-White", "Creme"],
+            "cores": ["#ffffff", "#000000"],
             "tamanho": ["P", "M", "G"],
             "detalhes": "Seda 100% pura com botões de madrepérola. Caimento fluido.",
             "imagem": "https://images.pexels.com/photos/1018911/pexels-photo-1018911.jpeg"
@@ -81,7 +81,7 @@ def create_prompt(preferences):
           "inferior": {{
             "nome": "Calça de Alfaiataria Cinza",
             "descricao": "Calça com corte reto que alonga a silhueta, criando uma imagem profissional e moderna.",
-            "cores": ["Cinza Chumbo", "Grafite"],
+            "cores": ["#0000ff", "#808080"],
             "tamanho": ["38", "40", "42"],
             "detalhes": "Lã fria com pregas frontais e cintura alta.",
             "imagem": "https://images.pexels.com/photos/7679883/pexels-photo-7679883.jpeg"
@@ -89,7 +89,7 @@ def create_prompt(preferences):
           "calcado": {{
             "nome": "Scarpin Preto de Couro",
             "descricao": "Um clássico atemporal que finaliza o look com elegância e formalidade.",
-            "cores": ["Preto"],
+            "cores": ["#808080"],
             "tamanho": ["35", "36", "37"],
             "detalhes": "Couro legítimo com bico fino e salto de 7cm.",
             "imagem": "https://images.pexels.com/photos/1445696/pexels-photo-1445696.jpeg"
@@ -97,7 +97,7 @@ def create_prompt(preferences):
           "cabelo": {{  
             "nome": "Coque Baixo Polido",
             "descricao": "Um penteado sofisticado que transmite elegância e mantém o foco no rosto e nos acessórios.",
-            "cores": ["Preto", "Castanho"],
+            "cores": ["#00ced1", "#232b2b"],
             "tamanho": [],
             "detalhes": "Finalizado com spray de brilho para um acabamento impecável e sem frizz.",
             "imagem": "https://images.pexels.com/photos/3992873/pexels-photo-3992873.jpeg"
@@ -105,7 +105,7 @@ def create_prompt(preferences):
           "acessorio": {{
             "nome": "Brincos de Pérola e Ouro",
             "descricao": "Acessório delicado que complementa a sofisticação do look sem sobrecarregar.",
-            "cores": ["Dourado", "Branco Pérola"],
+            "cores": ["#800000"],
             "tamanho": [],
             "detalhes": "Ouro 18k com pérolas naturais de água doce.",
             "imagem": "https://images.pexels.com/photos/1413420/pexels-photo-1413420.jpeg"
@@ -113,7 +113,7 @@ def create_prompt(preferences):
         }}
 
 IMPORTANTE: O campo "cores" NUNCA deve estar vazio. Sempre forneça pelo menos uma cor principal e, se possível, uma cor secundária relacionada a cada item. 
-Cada cor **deve ser APENAS UMA PALAVRA**, por exemplo: "vermelho", "azul", "verde". 
+Cada cor **deve ser APENAS HEXADECIMAL**, por exemplo: "#800000", "#00ced1", "#ffffff". 
 Não use adjetivos, múltiplas palavras ou combinações.
 
 
