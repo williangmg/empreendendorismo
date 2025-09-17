@@ -114,7 +114,7 @@ def create_prompt(preferences):
 
 IMPORTANTE: O campo "cores" NUNCA deve estar vazio. Sempre forneça pelo menos uma cor principal e, se possível, uma cor secundária relacionada a cada item. 
 Cada cor **deve ser APENAS HEXADECIMAL**, por exemplo: "#800000", "#00ced1", "#ffffff". 
-Não use adjetivos, múltiplas palavras ou combinações.
+Não use adjetivos, múltiplas palavras ou combinações, essas cores que vai retornar para ficar bem colorido também porque elas servem apenas para estilização da lista de resultados do front.
 
 
         Agora, gere o objeto JSON com base nas preferências do usuário.
